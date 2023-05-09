@@ -8,6 +8,9 @@ def Vec (α : Type u) (n : Nat) :=
 
 infix:50 "^" => Vec -- Allows you to write Vec 𝔽 n as 𝔽^n
 
+/- Vecs are just tuples -/
+def Tuple := Vec
+
 namespace Vec
   @[simp]
   theorem Vec_zero_eq_Vec_one (α : Type u) : Vec α 0 = Vec α 1 := by simp
@@ -124,6 +127,22 @@ namespace Vec
     by
       rw[add_comm v (zero_Vec 𝔽 n)]
       exact zero_add v
+  
+  def mult_id {𝔽 : Type} [Field 𝔽] {n : Nat} (v : Vec 𝔽 n) : mult_Vec 1 v = v :=
+    match n with
+    | 0 => by
+      simp at v
+      simp[mult_Vec]
+    | 1 => by
+      simp at v
+      simp[mult_Vec]
+    | k + 2 => by
+      simp at v
+      simp[mult_Vec]
+      have eq_pair : (v.1, v.2) = v := pair_eq v
+      rw[← mult_id v.2] at eq_pair
+      exact eq_pair
+
 
   variable {𝔽 : Type} [Field 𝔽] {n : Nat}
 
@@ -142,12 +161,12 @@ namespace Vec
 
     add_well_defined := by simp[*]
     mult_well_defined := by simp[*]
-    
+
     add_comm := Vec.add_comm
     add_assoc := Vec.add_assoc
     additive_inverse := sorry
 
-    mult_id := sorry
+    mult_id := Vec.mult_id
     mult_assoc := sorry
     mult_distrib_vec := sorry
     mult_distrib_add := sorry
