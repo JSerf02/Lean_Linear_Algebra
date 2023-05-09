@@ -6,7 +6,7 @@ def Vec (𝔽 : Type) [Field 𝔽]  (n : Nat) :=
 infix:50 "^" => Vec -- Allows you to write Vec 𝔽 n as 𝔽^n
 
 namespace Vec
-  variable {𝔽 : Type} [Field 𝔽] [AddZeroClass 𝔽]
+  variable {𝔽 : Type} [Field 𝔽]
   variable {n : Nat}
 
   def add_Vec (u : Vec 𝔽 n) (v : Vec 𝔽 n) : Vec 𝔽 n :=
