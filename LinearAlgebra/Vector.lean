@@ -3,7 +3,7 @@ import LinearAlgebra.VectorSpace
 def Vec (𝔽 : Type) [Field 𝔽]  (n : Nat) :=
   Vector 𝔽 n
 
-infix:50 "^" => Vec -- Allows you to write 𝔽^n as Vec 𝔽 n
+infix:50 "^" => Vec -- Allows you to write Vec 𝔽 n as 𝔽^n
 
 namespace Vec
   variable {𝔽 : Type} [Field 𝔽] [AddZeroClass 𝔽]
