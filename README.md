@@ -7,7 +7,7 @@
 5. Open the VSCode terminal.
 6. Run `lake update`. This will download and install `mathlib4` and its dependencies.
 7. Run `cp lake-packages/mathlib/lean-toolchain .`. Notice the dot at the end of this command! This will make sure `mathlib4` is compatible with the version of Lean that you are using.
-8. Run `lake exe cache get`. This will download the cache for `mathlib4`, which decrease the loading time from 30+ minutes to just a couple of seconds. If this doesn't work, you will have to find a way to install `curl 7.64` or later.
+8. Run `lake exe cache get`. This will download the cache for `mathlib4`, which decreases the loading time from 30+ minutes to just a couple of seconds. If this doesn't work, you will have to find a way to install `curl 7.64` or later.
 9. Run `lake build`. If you get no errors, everything worked!
 
 
