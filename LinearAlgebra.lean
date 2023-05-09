@@ -1,2 +1,2 @@
 import LinearAlgebra.VectorSpace
-import LinearAlgebra.Vector
+import LinearAlgebra.Vec

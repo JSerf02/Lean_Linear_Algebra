@@ -16,7 +16,7 @@ structure VectorSpace (𝔽 : Type) [Field 𝔽] (α : Type u) [AddZeroClass α]
   mult_well_defined (a : 𝔽) (v : α) : (v ∈ V) → ((a * v) ∈ V)
 
   add_assoc (u v w: α) : u + (v + w) = (u + v) + w
-  add_com (u v : α) : u + v = v + u
+  add_comm (u v : α) : u + v = v + u
   zero_add (u : α) : 0 + u = u := AddZeroClass.zero_add u
   add_zero (u : α) : u + 0 = u := AddZeroClass.add_zero u
   additive_inverse (u : α) : u ∈ V → ∃ u_inv ∈ V, u + u_inv = 0
