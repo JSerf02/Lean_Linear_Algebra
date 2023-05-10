@@ -24,18 +24,49 @@ namespace Vec
   @[simp]
   def get {n : Nat} (v : Vec α n) (idx : Nat) : α :=
     match n, idx with
-    | 0, _ => by
+    | 0    , _     => by
       simp at v
       exact v
-    | 1, _ => by
+    | 1    , _     => by
       simp at v
       exact v
-    | k + 2, 0 => by
+    | k + 2, 0     => by
       simp at v
       exact v.1
     | k + 2, i + 1 => by
       simp at v
       exact get v.2 i
+  
+  @[simp]
+  def zip_with {n : Nat} (f : α → β → γ)  (u : Vec α n) (v : Vec β n) : Vec γ n :=
+    match n with
+    | 0     => by
+      simp at u
+      simp at v
+      exact f u v
+    | 1     => by
+      simp at u
+      simp at v
+      exact f u v
+    | k + 2 => by
+      simp at u
+      simp at v
+      have fst : γ := f u.1 v.1
+      have snd : Vec γ (k + 1) := zip_with f u.2 v.2
+      exact ⟨fst, snd⟩ 
+  
+  @[simp]
+  def foldr {n : Nat} (f : α → β → β) (base : β) (v : Vec α n) : β :=
+    match n with
+    | 0 => by
+      simp at v
+      exact f v base
+    | 1 => by
+      simp at v
+      exact f v base
+    | k + 2 => by
+      simp at v
+      exact f v.1 (foldr f base v.2)
   
   @[simp]
   def add_Vec {𝔽 : Type} [Field 𝔽] {n : Nat} (u : Vec 𝔽 n) (v : Vec 𝔽 n) : Vec 𝔽 n :=
@@ -310,3 +341,7 @@ namespace Vec
     mult_distrib_vec := Vec.mult_distrib_vec
     mult_distrib_add := Vec.mult_distrib_add
 end Vec
+
+namespace Tuple
+  open Vec
+end Tuple
