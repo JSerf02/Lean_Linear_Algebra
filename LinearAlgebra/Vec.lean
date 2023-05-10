@@ -264,7 +264,7 @@ namespace Vec
   instance : Sub (Vec 𝔽 n) where
     sub := fun (u v : Vec 𝔽 n) => add_Vec u (-v)
   
-  /- Vec is a VectorSpace!!-/
+  /- Vec is a VectorSpace -/
   instance : VectorSpace 𝔽 (Vec 𝔽 n) where
     add_comm := Vec.add_comm
     add_assoc := Vec.add_assoc
