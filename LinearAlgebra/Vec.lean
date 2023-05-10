@@ -22,6 +22,22 @@ namespace Vec
   theorem Vec_succ_k_eq_Prod : Vec 𝔽 (k + 2) = (𝔽 × (Vec 𝔽 (k + 1))) := by simp
 
   @[simp]
+  def get {n : Nat} (v : Vec α n) (idx : Nat) : α :=
+    match n, idx with
+    | 0, _ => by
+      simp at v
+      exact v
+    | 1, _ => by
+      simp at v
+      exact v
+    | k + 2, 0 => by
+      simp at v
+      exact v.1
+    | k + 2, i + 1 => by
+      simp at v
+      exact get v.2 i
+  
+  @[simp]
   def add_Vec {𝔽 : Type} [Field 𝔽] {n : Nat} (u : Vec 𝔽 n) (v : Vec 𝔽 n) : Vec 𝔽 n :=
     match n with
     | 0     => by 
@@ -75,6 +91,7 @@ namespace Vec
       rw[Eq.symm Vec_succ_k_eq_Prod]
       assumption
   
+  
   theorem add_comm {𝔽 : Type} [Field 𝔽] {n : Nat} (u v : Vec 𝔽 n) : add_Vec u v = add_Vec v u := 
     match n with
     | 0     => by
@@ -93,6 +110,7 @@ namespace Vec
       simp[add_Vec]
       exact ⟨AddCommSemigroup.add_comm u.1 v.1, add_comm u.2 v.2⟩ 
   
+  @[simp]
   theorem add_assoc {𝔽 : Type} [Field 𝔽] {n : Nat} (u v w : Vec 𝔽 n) : add_Vec u (add_Vec v w) = add_Vec (add_Vec u v) w :=
    match n with
     | 0     => by 
@@ -113,8 +131,13 @@ namespace Vec
       have fst_eq : u.1 + (v.1 + w.1) = (u.1 + v.1) + w.1 := Eq.symm (AddSemigroup.add_assoc u.1 v.1 w.1)
       have snd_eq : add_Vec u.2 (add_Vec v.2 w.2) = add_Vec (add_Vec u.2 v.2) w.2 := add_assoc u.2 v.2 w.2
       exact ⟨fst_eq, snd_eq⟩ 
-  
-   theorem zero_add {𝔽 : Type} [Field 𝔽] {n : Nat} (v : Vec 𝔽 n) : 
+    
+    @[simp]
+    theorem flip_add_assoc {𝔽 : Type} [Field 𝔽] {n : Nat} (u v w : Vec 𝔽 n) : add_Vec (add_Vec u v) w = add_Vec u (add_Vec v w) :=
+      Eq.symm (add_assoc u v w)
+    
+    @[simp]
+    theorem zero_add {𝔽 : Type} [Field 𝔽] {n : Nat} (v : Vec 𝔽 n) : 
     add_Vec (zero_Vec 𝔽 n) v = v :=
       match n with
       | 0     => by simp[zero_Vec, add_Vec]
@@ -125,7 +148,8 @@ namespace Vec
         have pair_2 : add_Vec (zero_Vec 𝔽 (k + 1)) v.2 = v.2 := zero_add v.2
         rw[← pair_2] at to_pair
         exact (Eq.symm to_pair)
-  
+    
+  @[simp]
   theorem add_zero {𝔽 : Type} [Field 𝔽] {n : Nat} (v : Vec 𝔽 n) : 
     add_Vec v (zero_Vec 𝔽 n) = v := by
       rw[add_comm v (zero_Vec 𝔽 n)]
@@ -144,8 +168,9 @@ namespace Vec
       simp at v
       exact ⟨-v.1, neg v.2⟩ 
   
+  @[simp]
   theorem neg_eq_neg_one_mul {𝔽 : Type} [Field 𝔽] {n : Nat} (v : Vec 𝔽 n) : 
-    neg v = mult_Vec (-1 : 𝔽) v:=
+    neg v = mult_Vec (-1 : 𝔽) v :=
       match n with
       | 0     => by
         simp at v
@@ -157,7 +182,12 @@ namespace Vec
         simp at v
         simp
         exact neg_eq_neg_one_mul v.2
+    
+  @[simp]
+  theorem neg_one_mul_eq_neg {𝔽 : Type} [Field 𝔽] {n : Nat} (v : Vec 𝔽 n) :
+    mult_Vec (-1 : 𝔽) v = neg v := Eq.symm (neg_eq_neg_one_mul v)
 
+  @[simp]
   theorem neg_is_add_inv {𝔽 : Type} [Field 𝔽] {n : Nat} (v : Vec 𝔽 n) :
     add_Vec (neg v) v = zero_Vec 𝔽 n :=
       match n with
@@ -172,10 +202,12 @@ namespace Vec
         simp
         exact neg_is_add_inv v.2
   
+  @[simp]
   def add_inv {𝔽 : Type} [Field 𝔽] {n : Nat} (v : Vec 𝔽 n) :
     ∃ v_inv, add_Vec v_inv v = zero_Vec 𝔽 n :=
       ⟨neg v, neg_is_add_inv v⟩ 
   
+  @[simp]
   theorem mult_id {𝔽 : Type} [Field 𝔽] {n : Nat} (v : Vec 𝔽 n) : 
     mult_Vec 1 v = v :=
       match n with
@@ -192,6 +224,7 @@ namespace Vec
         rw[← mult_id v.2] at eq_pair
         exact eq_pair
   
+  @[simp]
   theorem mult_assoc {𝔽 : Type} [Field 𝔽] {n : Nat} (a b : 𝔽) (v : Vec 𝔽 n) :
     mult_Vec (a * b) v = mult_Vec a (mult_Vec b v) :=
       match n with
@@ -210,6 +243,10 @@ namespace Vec
         have snd : mult_Vec (a * b) v.2 = mult_Vec a (mult_Vec b v.2) := mult_assoc a b v.2
         exact ⟨fst, snd⟩ 
 
+  @[simp]
+  theorem flip_mult_assoc {𝔽 : Type} [Field 𝔽] {n : Nat} (a b : 𝔽) (v : Vec 𝔽 n) :
+    mult_Vec a (mult_Vec b v) = mult_Vec (a * b) v := Eq.symm (mult_assoc a b v)
+  
   theorem mult_distrib_vec {𝔽 : Type} [Field 𝔽] {n : Nat} (a : 𝔽) (u v : Vec 𝔽 n) :
     mult_Vec a (add_Vec u v) = add_Vec (mult_Vec a u) (mult_Vec a v) := 
       match n with
