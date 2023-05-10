@@ -168,7 +168,6 @@ namespace Vec
       simp at v
       exact ⟨-v.1, neg v.2⟩ 
   
-  @[simp]
   theorem neg_eq_neg_one_mul {𝔽 : Type} [Field 𝔽] {n : Nat} (v : Vec 𝔽 n) : 
     neg v = mult_Vec (-1 : 𝔽) v :=
       match n with
@@ -183,7 +182,6 @@ namespace Vec
         simp
         exact neg_eq_neg_one_mul v.2
     
-  @[simp]
   theorem neg_one_mul_eq_neg {𝔽 : Type} [Field 𝔽] {n : Nat} (v : Vec 𝔽 n) :
     mult_Vec (-1 : 𝔽) v = neg v := Eq.symm (neg_eq_neg_one_mul v)
 
