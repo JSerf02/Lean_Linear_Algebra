@@ -1,5 +1,6 @@
 import LinearAlgebra.VectorSpace
 import LinearAlgebra.Natural
+
 @[simp]
 def Vec (α : Type u) (n : ℕ₁) :=
   match n with 
@@ -263,10 +264,6 @@ namespace Vec
     add := add_Vec
     zero_add := Vec.zero_add
     add_zero := Vec.add_zero
-
-  /- Allows you to use * with 𝔽 and Vec 𝔽 n -/
-  instance : HMul 𝔽 (Vec 𝔽 n) (Vec 𝔽 n) where
-    hMul := mult_Vec
   
   /- Allows you to write -v where (v : Vec 𝔽 n) to get the additive inverse of v-/
   instance : Neg (Vec 𝔽 n) where
@@ -278,6 +275,8 @@ namespace Vec
   
   /- Vec is a VectorSpace -/
   instance : VectorSpace 𝔽 (Vec 𝔽 n) where
+    hMul := mult_Vec
+
     add_comm := Vec.add_comm
     add_assoc := Vec.add_assoc
     additive_inverse := add_inv
