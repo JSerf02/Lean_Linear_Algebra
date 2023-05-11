@@ -3,6 +3,7 @@ inductive Natural : Type where
 | succ : Natural → Natural
 
 notation:100 "ℕ₁" => Natural
+
 namespace Natural
   instance : Inhabited Natural where
     default := Natural.one
@@ -103,11 +104,8 @@ namespace Natural
 
   @[simp]
   theorem add_one_eq_succ (n : Natural) : add n 1 = succ n := by simp
-  
+
   instance : Repr Natural where
     reprPrec := fun (x : Natural) => Repr.reprPrec (toNat x)
-
-  attribute [match_pattern] Natural.add Natural.ofNat Natural.toNat
-
 end Natural
 
