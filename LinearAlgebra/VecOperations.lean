@@ -1,4 +1,5 @@
 import LinearAlgebra.Vec
+import LinearAlgebra.VecMember
 
 open Vec
 

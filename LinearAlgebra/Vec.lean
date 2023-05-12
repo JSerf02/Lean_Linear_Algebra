@@ -21,19 +21,6 @@ namespace Vec
 
   @[simp]
   theorem Vec_succ_k_eq_Prod : Vec 𝔽 (k + 1) = (𝔽 × (Vec 𝔽 k)) := by simp
-
-  @[simp]
-  def get {n : ℕ₁} (v : Vec α n) (idx : ℕ₁) : α :=
-    match n, idx with
-    | 1    , _     => by
-      simp at v
-      exact v
-    | k + 1, 0     => by
-      simp at v
-      exact v.1
-    | k + 1, i + 1 => by
-      simp at v
-      exact get v.2 i
   
   @[simp]
   def add_Vec {α : Type} [AddCommGroup α] {n : ℕ₁} (u v : Vec α n) : Vec α n :=
