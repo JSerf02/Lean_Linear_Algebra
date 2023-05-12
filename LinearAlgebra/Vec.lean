@@ -34,9 +34,7 @@ namespace Vec
       simp at u
       simp at v
       simp
-      have : α × α^k := ⟨u.1 + v.1, add_Vec u.2 v.2⟩ 
-      rw[Eq.symm Vec_succ_k_eq_Prod]
-      assumption
+      exact ⟨u.1 + v.1, add_Vec u.2 v.2⟩ 
   
   @[simp]
   def mult_Vec {𝔽 α : Type} [AddCommGroup α] [Field 𝔽] [HMul 𝔽 α α] {n : ℕ₁} (a : 𝔽) (v : Vec α n) : Vec α n :=
@@ -47,9 +45,7 @@ namespace Vec
     | k + 1 => by
       simp at v
       simp
-      have : α × α^k := ⟨a * v.1, mult_Vec a v.2⟩ 
-      rw[Eq.symm Vec_succ_k_eq_Prod]
-      assumption
+      exact ⟨a * v.1, mult_Vec a v.2⟩
  
   def pair_eq (v : Vec α (n + 1)) : v = ⟨v.fst, v.snd⟩  := by simp
   
@@ -61,9 +57,7 @@ namespace Vec
       exact 0
     | k + 1 => by
       simp
-      have : α × α^k := ⟨0, zero_Vec α k⟩ 
-      rw[Eq.symm Vec_succ_k_eq_Prod]
-      assumption
+      exact ⟨0, zero_Vec α k⟩ 
   
   
   theorem add_comm {α : Type} [AddCommGroup α] {n : ℕ₁} (u v : Vec α n) : add_Vec u v = add_Vec v u := 
