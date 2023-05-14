@@ -7,9 +7,96 @@ import Std.Data.Rat
 import Mathlib.Tactic.Convert
 import Mathlib.Data.Rat.Init
 
-/-
-  This document builds a definition of vector spaces from scratch with all their
-  mathematical dependencies accounted for.
+/-!
+Math:
+
+* Algebra:
+  An algebra is a system A = [P, F] in which
+
+    (i) P = {Sᵢ} is a family of nonempty sets Sᵢ of different types of
+    elements, each called a phylum of the algebra A. The phyla are
+    indexed by some set I.
+    
+    (ii) F = {fₐ} is a set of finitary operations, where each fₐ is a map
+        fₐ : Sᵢ₍₁,ₐ₎ × ⋯ × Sᵢ₍ₙ₍ₐ₎,ₐ₎ → Sᵣ₍ₐ₎,
+      where n(a) is a nonnegative integer, iₐ : k ↦ i(k,a) is a map from
+      {1, ⋯ , n} to I, and r(a) ∈ I. The operations fₐ are indexed by some
+      set Ω.
+  
+  A heterogeneous algebra is an algebra with more than one phylum.
+
+  A homogeneous algebra is an algebra with exactly one phylum.
+
+* Magma:
+  A magma is a set M with a binary operation ⬝ : M × M → M. Magmas are used to
+  define semigroups.
+
+  An additive magma is a magma for which we think of the binary operation,
+  denote +, as addition in some sense.
+
+  A magma with zero is a magma M for which there exists an element 0 ∈ M such
+  that 0 ⬝ x = 0 = x ⬝ 0 for all x ∈ M.
+
+  A unital magma is a magma M with an element 1 ∈ M such that 1 ⬝ x = x = x ⬝ 1
+  for all x ∈ M.
+
+  An additive unital magma is a unital magma for which we think of the binary
+  operation, denoted +, as addition in some sense.
+
+* Semigroup:
+  Semigroups are associative magmas. Semigroups are used to define monoids.
+
+  A semigroup is a set S with a binary operation ⬝ : S × S → S such that
+    (a ⬝ b) ⬝ c = a ⬝ (b ⬝ c)
+  for all a, b, c ∈ S.
+
+  An additive semigroup is a semigroup where we think of the binary
+  operation, denoted +, as addition in some sense.
+
+  A commutative semigroup is a semigroup such that
+    a ⬝ b = b ⬝ a
+  for all a, b ∈ S.
+
+  An additive, commutative semigroup is an additive semigroup such that
+    a + b = b + a
+  for all a, b ∈ S.
+
+* Monoid
+  A monoid is a unital semigroup. Monoids are used to define groups.
+
+  A monoid is a set M with a binary operation ⬝ : M × M → M such that the
+  following hold:
+
+  (i) We have
+    (a ⬝ b) ⬝ c = a ⬝ (b ⬝ c)
+  for all a, b, c ∈ M
+
+  (ii) There exists e ∈ M such that e ⬝ a = a = a ⬝ e for all a ∈ M.
+  
+  An additive monoid is a monoid in which we think of the binary operation,
+  denoted +, as addition in some sense.
+
+  A commutative monoid is a monoid such that a ⬝ b = b ⬝ a for all a, b ∈ M.
+
+  An additive commutative monoid is a commutative monoid in which we think of
+  the binary operation, denoted +, as addition in some sense.
+
+* Group
+  A group is a semigroup with inverses.
+
+* Semiring
+  A semiring is a ring without inverses.
+
+* Ring
+  A ring is an abelian group under addition, a monoid under multiplication
+  and has distributive laws.
+
+* Field
+  Fields generalize groups to things we are used to working with, e.g. ℚ and ℝ.
+
+* Vector Space
+  A vector space is an additive commutative group under addition acted upon by a
+  field.
 -/
 
 open Function
@@ -39,27 +126,7 @@ end HelpfulTypeclasses
 
 section Algebra
 
-/-
-Math:
-  An algebra is a system A = [P, F] in which
-
-    (i) P = {Sᵢ} is a family of nonempty sets Sᵢ of different types of
-    elements, each called a phylum of the algebra A. The phyla are
-    indexed by some set I.
-    
-    (ii) F = {fₐ} is a set of finitary operations, where each fₐ is a map
-        fₐ : Sᵢ₍₁,ₐ₎ × ⋯ × Sᵢ₍ₙ₍ₐ₎,ₐ₎ → Sᵣ₍ₐ₎,
-      where n(a) is a nonnegative integer, iₐ : k ↦ i(k,a) is a map from
-      {1, ⋯ , n} to I, and r(a) ∈ I. The operations fₐ are indexed by some
-      set Ω.
-  
-  A heterogeneous algebra is an algebra with more than one phylum.
-
-  A homogeneous algebra is an algebra with exactly one phylum.
--/
-
-/-- `HVAdd` is the notation typeclass for heterogeneous (vector) addition. This
-      enables the notation `a +ᵥ b : γ`, where `a : α` and `b : β`, and is
+/-- `HVAdd` is the notation typeclass for heterogeneous addition. This is
       used to define a heterogeneous algebra with finitary operation `+ᵥ`. -/
 class HVAdd (α : Type u) (β : Type v) (γ : outParam (Type w)) where
   hAdd : α → β → γ
@@ -81,10 +148,9 @@ class VAdd (G : Type _) (P : Type _) where
 /-- `SMul` is the typeclass for types with a scalar multiplication
       operation `•`. -/
 @[to_additive (attr := ext)]
-class SMul (M : Type _) (α : Type _) where
-  smul : M → α → α
+class SMul (S : Type _) (α : Type _) where
+  smul : S → α → α
 
-infixl:65 " +ᵥ " => HVAdd.hVAdd
 infixr:73 " • " => HSMul.hSMul
 
 attribute [to_additive existing] Mul Div HMul instHMul HDiv instHDiv HSMul
@@ -104,24 +170,6 @@ end Algebra
 
 section Magma
 
-/-
-Math:
-  A magma is a set M with a binary operation ⬝ : M × M → M. Magmas are used to
-  define semigroups.
-
-  An additive magma is a magma for which we think of the binary operation,
-  denote +, as addition in some sense.
-
-  A magma with zero is a magma M for which there exists an element 0 ∈ M such
-  that 0 ⬝ x = 0 = x ⬝ 0 for all x ∈ M.
-
-  A unital magma is a magma M with an element 1 ∈ M such that 1 ⬝ x = x = x ⬝ 1
-  for all x ∈ M.
-
-  An additive unital magma is a unital magma for which we think of the binary
-  operation, denoted +, as addition in some sense.
--/
-
 /-- `MulOneClass` is the typeclass for unital magmas. -/
 class MulOneClass (M : Type u) extends One M, Mul M where
   one_mul : ∀ a : M, 1 * a = a
@@ -136,6 +184,8 @@ attribute [to_additive] MulOneClass
 
 
 section MulOneClass
+
+/- Note: Missing @[ext] lemma -/
 
 variable {M : Type u} [MulOneClass M]
 
@@ -163,26 +213,6 @@ end Magma
 
 
 section Semigroup
-
-/-
-Math:
-  Semigroups are associative magmas. Semigroups are used to define monoids.
-
-  A semigroup is a set S with a binary operation ⬝ : S × S → S such that
-    (a ⬝ b) ⬝ c = a ⬝ (b ⬝ c)
-  for all a, b, c ∈ S.
-
-  An additive semigroup is a semigroup where we think of the binary
-  operation, denoted +, as addition in some sense.
-
-  A commutative semigroup is a semigroup such that
-    a ⬝ b = b ⬝ a
-  for all a, b ∈ S.
-
-  An additive, commutative semigroup is an additive semigroup such that
-    a + b = b + a
-  for all a, b ∈ S.
--/
 
 /-- `Semigroup` is the typeclass for semigroups. -/
 @[ext]
@@ -235,8 +265,8 @@ def npowRec [One M] [Mul M] : ℕ → M → M
   | 0, _ => 1
   | n + 1, a => a * npowRec n a
 
-/-- `nsmulRec` is the fundamental scalar multiplication in an additive monoid.
-      Use `n • a` instead, since it has better definitional behavior. -/
+/-- `nsmulRec` is the fundamental scalar multiplication in an
+      additive monoid. -/
 def nsmulRec [Zero M] [Add M] : ℕ → M → M
   | 0, _ => 0
   | n + 1, a => a + nsmulRec n a
@@ -247,28 +277,6 @@ end NaturalNumberOperations
 
 
 section Monoid
-
-/-
-Math:
-  A monoid is a unital semigroup. Monoids are used to define groups.
-
-  A monoid is a set M with a binary operation ⬝ : M × M → M such that the
-  following hold:
-
-    (i) We have
-      (a ⬝ b) ⬝ c = a ⬝ (b ⬝ c)
-    for all a, b, c ∈ M
-
-    (ii) There exists e ∈ M such that e ⬝ a = a = a ⬝ e for all a ∈ M.
-  
-  An additive monoid is a monoid in which we think of the binary operation,
-  denoted +, as addition in some sense.
-
-  A commutative monoid is a monoid such that a ⬝ b = b ⬝ a for all a, b ∈ M.
-
-  An additive commutative monoid is a commutative monoid in which we think of
-  the binary operation, denoted +, as addition in some sense.
--/
 
 /-- `AddMonoid` is the typeclass for additive monoids. -/
 class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
@@ -313,6 +321,7 @@ theorem pow_succ (a : M) (n : ℕ) : a ^ (n + 1) = a * a ^ n :=
 
 end
 
+
 section
 
 variable {M : Type u} [Monoid M]
@@ -335,32 +344,12 @@ attribute [to_additive existing] CommMonoid.toCommSemigroup
 
 section Integer_Operations
 
-/-
-Math:
-  An inverse semigroup is a semigroup G such that for every x ∈ G there exists
-  a unique y ∈ G such that x = x ⬝ y ⬝ x and y = y ⬝ x ⬝ y.
-
-  An additive inverse semigroup is an inverse semigroup where we think of the binary
-  operation, denoted +, as addition in some sense.
-
-  If G is a semigroup, a ∈ G, and n ∈ ℕ, then aⁿ := a ⬝ ⋯ ⬝ a, meaning a is multiplied
-  n times.
-
-  If G is an additive semigroup, a ∈ G, and n ∈ ℕ, then n ⬝ a := a + a + ⋯ + a,
-  meaning a is added n times.
-
-  If G is an additive inverse semigroup, a ∈ G, and n ∈ ℤ, then
-  n ⬝ a := a + a + ⋯ + a, meaning a is added to zero n times.
--/
-
-/-- `zpowRec` is the fundamental scalar multiplication in a group. Use instead
-      `a ^ n` which has better definitional behavior. -/
+/-- `zpowRec` is the fundamental scalar multiplication in a group. -/
 def zpowRec {M : Type _} [One M] [Mul M] [Inv M] : ℤ → M → M
   | Int.ofNat n, a => npowRec n a
   | Int.negSucc n, a => (npowRec n.succ a)⁻¹
 
-/-- `zsmulRec` is the fundamental scalar multiplication in an additive group. Use
-      instead `n • a` which has better definitional behavior. -/
+/-- `zsmulRec` is the fundamental scalar multiplication in an additive group. -/
 def zsmulRec {M : Type _} [Zero M] [Add M] [Neg M] : ℤ → M → M
   /- Multiplication by a nonnegative integer is just applying `nsmulRec`. -/
   | Int.ofNat n, a => nsmulRec n a
@@ -386,7 +375,7 @@ end Integer_Operations
 def DivInvMonoid.div' {G : Type u} [Monoid G] [Inv G] (a b : G) : G :=
   a * b⁻¹
 
-/-
+/--
   `DivInvMonoid` is the typeclass for monoids with an inversion operation `⁻¹`
   and a division operation `/` satisfying `div_eq_mul_inv : ∀ a b, a / b = a * b⁻¹`. 
   (The existence of an inversion operation `⁻¹` does not imply that `⁻¹` is an
@@ -404,7 +393,7 @@ class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G where
   zpow_neg' (n : ℕ) (a : G) : zpow (Int.negSucc n) a = (zpow n.succ a)⁻¹ := by
     intros; rfl
 
-/-
+/--
   `SubNegMonoid.sub'` records what the default definition for `Sub` would be, that
   is `a + -b`, in a class equipped with instances of both `AddMonoid` and `Neg`.
   
@@ -636,14 +625,5 @@ class IsLinearMap (F : Type u) (G₁ G₂ : Type _) [Field F]
   (f : G₁ → G₂) : Prop where
   map_add : ∀ x y, f (x + y) = f x + f y
   map_smul : ∀ (α : F) (x), f (α • x) = α • f x
-
-structure AddHom (M : Type _) (N : Type _) [Add M] [Add N] where
-  toFun : M → N
-  map_add' : ∀ x y, toFun (x + y) = toFun x + toFun y
-
-structure LinearMap {F : Type _} {H : Type _} [Field F] [Field H] (σ : F → H) (G₁ : Type _)
-    (G₂ : Type _) [AddCommGroup G₁] [AddCommGroup G₂] [VectorSpace F G₁] [VectorSpace H G₂] extends
-    AddHom G₁ G₂ where
-  map_smul' : ∀ (α : F) (x : G₁), toFun (α • x) = σ α • toFun x
 
 end IsLinear
