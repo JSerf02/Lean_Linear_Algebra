@@ -4,6 +4,7 @@ import LinearAlgebra.Vec
 import LinearAlgebra.VecOperations
 
 open Vec.Operations
+
 /- Here, we provide tools for interacting with finite dimensional VectorSpaces 
    Note that certain things like infinite spanning sets will not be supported here -/
 namespace Basis
@@ -54,4 +55,5 @@ namespace Basis
       have factors_and_zero : accum vs factors = 0 ∧ accum vs 0 = 0 := ⟨h, zero_accum⟩ 
       exact (Unique.unique (0 : V) factors (0 : Vec 𝔽 n) factors_and_zero)
 
+  variable [VectorSpace 𝔽 V] [Spanning 𝔽 V vs] [LinearIndependent 𝔽 V vs]
 end Basis

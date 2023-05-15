@@ -2,19 +2,6 @@ import LinearAlgebra.Vec
 
 namespace Vec
   @[simp]
-  def get {n : ℕ₁} (v : Vec α n) (idx : ℕ₁) : α :=
-    match n, idx with
-    | 1    , _     => by
-      simp at v
-      exact v
-    | k + 1, 1     => by
-      simp at v
-      exact v.1
-    | k + 1, i + 1 => by
-      simp at v
-      exact get v.2 i
-
-  @[simp]
   theorem mem : α → (Vec α n) → Prop := 
     fun (a : α) (v : Vec α n) => 
       ∃ (idx : ℕ₁), get v idx = a
@@ -31,15 +18,20 @@ namespace Vec
   theorem get_unit_is_vec (idx : ℕ₁) (v : Vec α 1) : get v idx = (v : α) := by simp
 
   @[simp]
-  theorem mem_unit_is_eq (a : α) (v : Vec α 1) : (∃ (idx : ℕ₁), get v idx = a) = (a = v) := by 
-    simp
+  theorem exists_elim (α : Type u) [Inhabited α] (p : Prop) : (∃ (a : α), p) ↔ p := by
     apply Iff.intro
-    exact Eq.symm
-    exact Eq.symm    
+    . intro ⟨_, p⟩ 
+      exact p
+    . intro p
+      exact ⟨default, p⟩ 
+
+  @[simp]
+  theorem mem_unit_is_eq (a : α) (v : Vec α 1) : (∃ (idx : ℕ₁), get v idx = a) ↔ (v = a) := by 
+    simp 
 
   @[simp]
   theorem mem_k_plus_1_is_mem_unit_or_mem_k {n : ℕ₁} (a : α) (v : Vec α (n + 1)) : 
-    (∃ (idx : ℕ₁), get v idx = a) = ((a = v.1) ∨ (∃ (idx : ℕ₁), get v.2 idx = a)) := by
+    (∃ (idx : ℕ₁), get v idx = a) ↔ ((a = v.1) ∨ (∃ (idx : ℕ₁), get v.2 idx = a)) := by
     simp 
     apply Iff.intro
     . intro ⟨idx, left⟩ 
@@ -69,6 +61,7 @@ namespace Vec
     match n with
     | 1 => by 
       simp
+      simp[Eq.symm]
       exact decEq v a
     | k + 1 => by
       simp at v

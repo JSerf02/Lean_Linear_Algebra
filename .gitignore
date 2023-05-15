@@ -1,3 +1,4 @@
 /build
 /lake-packages/*
 /.cache
+lake-manifest.json

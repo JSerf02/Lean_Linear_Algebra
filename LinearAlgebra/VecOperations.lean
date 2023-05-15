@@ -1,55 +1,107 @@
 import LinearAlgebra.Vec
-import LinearAlgebra.VecMember
+import LinearAlgebra.VectorSpace
 
 open Vec
-
 namespace Vec.Operations
   @[simp]
-  def map {n : ℕ₁} (f : α → β) (v : Vec α n) : Vec β n :=
-    match n with
-    | 1 => by
-      simp at v
-      exact f v
-    | k + 1 => by
-      simp at v
-      have fst : β := f v.1
-      have snd : Vec β k := map f v.2
-      exact ⟨fst, snd⟩ 
+  def add_Vec {α : Type} [AddCommGroup α] {n : ℕ₁} (u v : Vec α n) : Vec α n :=
+    zip_with (. + .) u v
   
   @[simp]
-  def zip_with {n : ℕ₁} (f : α → β → γ) (u : Vec α n) (v : Vec β n) : Vec γ n :=
-    match n with
-    | 1     => by
-      simp at u
-      simp at v
-      exact f u v
-    | k + 1 => by
-      simp at u
-      simp at v
-      have fst : γ := f u.1 v.1
-      have snd : Vec γ k := zip_with f u.2 v.2
-      exact ⟨fst, snd⟩ 
+  def mult_Vec {𝔽 α : Type} [AddCommGroup α] [Field 𝔽] [HMul 𝔽 α α] {n : ℕ₁} (a : 𝔽) (v : Vec α n) : Vec α n :=
+    map (a * .) v
   
   @[simp]
-  def foldr {n : ℕ₁} (f : α → β → β) (base : β) (v : Vec α n) : β :=
-    match n with
-    | 1 => by
-      simp at v
-      exact f v base
-    | k + 1 => by
-      simp at v
-      exact f v.1 (foldr f base v.2)
+  def zero_Vec (𝔽 : Type) [AddCommGroup α] (n : ℕ₁) : Vec α n :=
+    replicate 0 n
+  
+  theorem add_comm {α : Type} [AddCommGroup α] {n : ℕ₁} (u v : Vec α n) : 
+    add_Vec u v = add_Vec v u := by simp[entrywise_eq, AddCommGroup.add_comm]
+  
+  @[simp]
+  theorem add_assoc {α : Type} [AddCommGroup α] {n : ℕ₁} (u v w : Vec α n) : 
+    add_Vec u (add_Vec v w) = add_Vec (add_Vec u v) w := by 
+      simp[entrywise_eq, AddSemigroup.add_assoc]
+  
+  @[simp]
+  theorem flip_add_assoc {α : Type} [AddCommGroup α] {n : ℕ₁} (u v w : Vec α n) : 
+    add_Vec (add_Vec u v) w = add_Vec u (add_Vec v w) :=
+      Eq.symm (add_assoc u v w)
+    
+  @[simp]
+  theorem zero_add {α : Type} [AddCommGroup α] {n : ℕ₁} (v : Vec α n) : 
+    add_Vec (zero_Vec α n) v = v := by simp
+    
+  @[simp]
+  theorem add_zero {α : Type} [AddCommGroup α] {n : ℕ₁} (v : Vec α n) : 
+    add_Vec v (zero_Vec α n) = v := by
+      rw[add_comm v (zero_Vec α n)]
+      exact zero_add v
+  
+  @[simp]
+  def neg {α : Type} [AddCommGroup α] {n : ℕ₁} (v : Vec α n) : Vec α n :=
+    map (fun x => -x) v
+  
+  theorem neg_eq_neg_one_mul {𝔽 : Type} [Field 𝔽] {n : ℕ₁} (v : Vec 𝔽 n) : 
+    neg v = mult_Vec (-1 : 𝔽) v := by simp
+  
+
+  theorem neg_one_mul_eq_neg {𝔽 : Type} [Field 𝔽] {n : ℕ₁} (v : Vec 𝔽 n) :
+    mult_Vec (-1 : 𝔽) v = neg v := Eq.symm (neg_eq_neg_one_mul v)
 
   @[simp]
-  def foldl {n : ℕ₁} (f : α → β → β) (base : β) (v : Vec α n) : β :=
-    match n with
-    | 1 => by
-      simp at v
-      exact f v base
-    | k + 1 => by
-      simp at v
-      exact foldl f (f v.1 base) v.2
+  theorem neg_is_add_inv {α : Type} [AddCommGroup α] {n : ℕ₁} (v : Vec α n) :
+    add_Vec (neg v) v = zero_Vec 𝔽 n := by
+      simp[zip_with, replicate_id]
+  
+  @[simp]
+  def add_inv {α : Type} [AddCommGroup α] {n : ℕ₁} (v : Vec α n) :
+    ∃ v_inv, add_Vec v_inv v = zero_Vec 𝔽 n :=
+      ⟨neg v, neg_is_add_inv v⟩ 
+  
+  @[simp]
+  theorem mult_id {𝔽 : Type} [Field 𝔽] {n : ℕ₁} (v : Vec 𝔽 n) : 
+    mult_Vec 1 v = v := by simp
+  
+  @[simp]
+  theorem mult_assoc {𝔽 : Type} [Field 𝔽] {n : ℕ₁} (a b : 𝔽) (v : Vec 𝔽 n) :
+    mult_Vec (a * b) v = mult_Vec a (mult_Vec b v) := by simp[Semigroup.mul_assoc]
 
+  @[simp]
+  theorem flip_mult_assoc {𝔽 : Type} [Field 𝔽] {n : ℕ₁} (a b : 𝔽) (v : Vec 𝔽 n) :
+    mult_Vec a (mult_Vec b v) = mult_Vec (a * b) v := Eq.symm (mult_assoc a b v)
+  
+  theorem mult_distrib_vec_add {𝔽 : Type} [Field 𝔽] {n : ℕ₁} (a : 𝔽) (u v : Vec 𝔽 n) :
+    mult_Vec a (add_Vec u v) = add_Vec (mult_Vec a u) (mult_Vec a v) := by
+      simp[zip_with, entrywise_eq, apply_swap v u, left_distrib]
+
+  theorem mult_distrib_scalar_add {𝔽 : Type} [Field 𝔽] {n : ℕ₁} (a b : 𝔽) (v : Vec 𝔽 n) :
+    mult_Vec (a + b) v = add_Vec (mult_Vec a v) (mult_Vec b v) := by
+      simp[zip_with, entrywise_eq, right_distrib]
+
+  instance {α : Type} [AddCommGroup α] {n : ℕ₁} : AddCommGroup (Vec α n) where
+    zero := zero_Vec α n
+    add := add_Vec
+    zero_add := zero_add
+    add_zero := add_zero
+    neg := neg
+    add_assoc := fun (u v w : Vec α n) => Eq.symm (add_assoc u v w)
+    add_left_neg := neg_is_add_inv
+    add_comm := add_comm
+  
+  instance {α 𝔽 : Type} [AddCommGroup α] [Field 𝔽] [HMul 𝔽 α α] : HMul 𝔽 (Vec α n) (Vec α n) where
+    hMul := mult_Vec
+  
+  instance [Field 𝔽] [AddCommGroup V] [VectorSpace 𝔽 V] : HMul 𝔽 (Vec V n) (Vec V n) where
+    hMul := mult_Vec
+  
+  /- Vec is a VectorSpace -/
+  instance {𝔽 : Type} [Field 𝔽] {n : ℕ₁} : VectorSpace 𝔽 (Vec 𝔽 n) where
+    mult_id := mult_id
+    mult_assoc := mult_assoc
+    mult_distrib_vec_add := mult_distrib_vec_add
+    mult_distrib_scalar_add := mult_distrib_scalar_add 
+  
   @[simp]
   def accum {n : ℕ₁} [AddCommGroup α] [HMul 𝔽 α α] (as : Vec α n) (factors : Vec 𝔽 n) : α :=
     foldr Add.add Zero.zero (zip_with HMul.hMul factors as)
@@ -96,14 +148,14 @@ namespace Vec.Operations
       | 1     => by
         simp at factors
         simp at vs
-        simp
+        simp[zip_with]
         let zero_eq_0 : Zero.zero = (0 : V) := by rfl
         let add_eq_plus (x y : V): Add.add x y = x + y := by rfl
         simp[zero_eq_0, add_eq_plus]
       | k + 1 => by
         simp at factors
         simp at vs
-        simp
+        simp[zip_with]
         let zero_eq_0 : Zero.zero = (0 : V) := by rfl
         let add_eq_plus (x y : V): Add.add x y = x + y := by rfl
         simp[zero_eq_0, add_eq_plus]
@@ -119,13 +171,13 @@ namespace Vec.Operations
       accum vs (0 : Vec 𝔽 n) = 0 := 
         match n with
         | 1     => by 
-          simp
+          simp[zip_with]
           let zero_eq_0 : Zero.zero = (0 : V) := by rfl
           let add_eq_plus (x y : V): Add.add x y = x + y := by rfl
           simp[zero_eq_0, add_eq_plus]
         | k + 1 => by
           simp at vs
-          simp
+          simp[zip_with]
           let zero_eq_0 : Zero.zero = (0 : V) := by rfl
           let add_eq_plus (x y : V): Add.add x y = x + y := by rfl
           simp[zero_eq_0, add_eq_plus]
@@ -140,7 +192,7 @@ namespace Vec.Operations
   theorem add_passes_through_zip_with {n : ℕ₁} [AddCommGroup α] (as₁ as₂ : Vec α n) : 
     zip_with (. + .) as₁ as₂ = as₁ + as₂ := 
       match n with
-      | 1     => by simp
+      | 1     => by simp[zip_with]
       | k + 1 => by 
         simp at as₁
         simp at as₂
@@ -154,7 +206,7 @@ namespace Vec.Operations
   theorem neg_passes_through_map {n : ℕ₁} [AddCommGroup α] (as : Vec α n) :
     map (-.) as = -as := 
       match n with
-      | 1 => by simp
+      | 1     => by simp
       | k + 1 => by
         simp at as
         simp
