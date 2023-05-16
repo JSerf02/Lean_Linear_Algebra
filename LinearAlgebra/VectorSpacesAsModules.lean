@@ -8,6 +8,27 @@ import Mathlib.Tactic.Convert
 import Mathlib.Data.Rat.Init
 
 /-!
+
+# Path
+
+* 1.) We define notation typeclasses for heterogeneous vector multiplication
+      in Algebra.
+* 2.) We define multiplicative typeclasses in Magma.
+* 3.) We define semigroups as an extension of Mul.
+* 4.) We define the basic operations in monoids in natural number operations.
+* 5.) Monoids are semigroups with identity, so they naturally extend Semigroup
+      and MulOneClass.
+* 6.) To introduce inverses, we need to define operations over the integers.
+* 7.) This allows us to define the middle of the road, DivInvMonoid and SubNegMonoid.
+* 8.) We define groups as monoids with inverses, so Group extends DivInvMonoid,
+      and AddGroup extends SubNegMonoid, by requiring that the `⁻¹` operation
+      is an involutive inverse operation.
+* 9.) From here we define semirings, rings, and fields, which gives us the necessary
+      ingredients for a module, i.e., a commutative additive monoid of vectors
+      with an action by some semiring.
+* 10.) Vector spaces are modulees where the commutative additive monoid is a
+      commutative additive group and the semiring is a field.
+
 Math:
 
 * Algebra:
@@ -126,6 +147,25 @@ end HelpfulTypeclasses
 
 section Algebra
 
+/-
+Algebra:
+  An algebra is a system A = [P, F] in which
+
+    (i) P = {Sᵢ} is a family of nonempty sets Sᵢ of different types of
+    elements, each called a phylum of the algebra A. The phyla are
+    indexed by some set I.
+    
+    (ii) F = {fₐ} is a set of finitary operations, where each fₐ is a map
+        fₐ : Sᵢ₍₁,ₐ₎ × ⋯ × Sᵢ₍ₙ₍ₐ₎,ₐ₎ → Sᵣ₍ₐ₎,
+      where n(a) is a nonnegative integer, iₐ : k ↦ i(k,a) is a map from
+      {1, ⋯ , n} to I, and r(a) ∈ I. The operations fₐ are indexed by some
+      set Ω.
+  
+  A heterogeneous algebra is an algebra with more than one phylum.
+
+  A homogeneous algebra is an algebra with exactly one phylum.
+-/
+
 /-- `HVAdd` is the notation typeclass for heterogeneous addition. This is
       used to define a heterogeneous algebra with finitary operation `+ᵥ`. -/
 class HVAdd (α : Type u) (β : Type v) (γ : outParam (Type w)) where
@@ -169,6 +209,24 @@ end Algebra
 
 
 section Magma
+
+/-
+Magma:
+  A magma is a set M with a binary operation ⬝ : M × M → M. Magmas are used to
+  define semigroups.
+
+  An additive magma is a magma for which we think of the binary operation,
+  denote +, as addition in some sense.
+
+  A magma with zero is a magma M for which there exists an element 0 ∈ M such
+  that 0 ⬝ x = 0 = x ⬝ 0 for all x ∈ M.
+
+  A unital magma is a magma M with an element 1 ∈ M such that 1 ⬝ x = x = x ⬝ 1
+  for all x ∈ M.
+
+  An additive unital magma is a unital magma for which we think of the binary
+  operation, denoted +, as addition in some sense.
+-/
 
 /-- `MulOneClass` is the typeclass for unital magmas. -/
 class MulOneClass (M : Type u) extends One M, Mul M where
@@ -214,6 +272,26 @@ end Magma
 
 section Semigroup
 
+/-
+Semigroup:
+  Semigroups are associative magmas. Semigroups are used to define monoids.
+
+  A semigroup is a set S with a binary operation ⬝ : S × S → S such that
+    (a ⬝ b) ⬝ c = a ⬝ (b ⬝ c)
+  for all a, b, c ∈ S.
+
+  An additive semigroup is a semigroup where we think of the binary
+  operation, denoted +, as addition in some sense.
+
+  A commutative semigroup is a semigroup such that
+    a ⬝ b = b ⬝ a
+  for all a, b ∈ S.
+
+  An additive, commutative semigroup is an additive semigroup such that
+    a + b = b + a
+  for all a, b ∈ S.
+-/
+
 /-- `Semigroup` is the typeclass for semigroups. -/
 @[ext]
 class Semigroup (S : Type u) extends Mul S where
@@ -255,6 +333,15 @@ class SemigroupWithZero (G : Type u) extends Semigroup G, MulZeroClass G
 
 end Semigroup
 
+/-
+  Algebra
+  |
+  Magma
+  |
+  Semigroup
+  |
+  Module
+-/
 
 section NaturalNumberOperations
 
@@ -277,6 +364,28 @@ end NaturalNumberOperations
 
 
 section Monoid
+
+/-
+Monoid
+  A monoid is a unital semigroup. Monoids are used to define groups.
+
+  A monoid is a set M with a binary operation ⬝ : M × M → M such that the
+  following hold:
+
+  (i) We have
+    (a ⬝ b) ⬝ c = a ⬝ (b ⬝ c)
+  for all a, b, c ∈ M
+
+  (ii) There exists e ∈ M such that e ⬝ a = a = a ⬝ e for all a ∈ M.
+  
+  An additive monoid is a monoid in which we think of the binary operation,
+  denoted +, as addition in some sense.
+
+  A commutative monoid is a monoid such that a ⬝ b = b ⬝ a for all a, b ∈ M.
+
+  An additive commutative monoid is a commutative monoid in which we think of
+  the binary operation, denoted +, as addition in some sense.
+-/
 
 /-- `AddMonoid` is the typeclass for additive monoids. -/
 class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
@@ -322,7 +431,7 @@ theorem pow_succ (a : M) (n : ℕ) : a ^ (n + 1) = a * a ^ n :=
 end
 
 
-section
+section MonoidTheorems
 
 variable {M : Type u} [Monoid M]
 
@@ -330,7 +439,7 @@ variable {M : Type u} [Monoid M]
 theorem left_inv_eq_right_inv {a b c : M} (hba : b * a = 1 ) (hac : a * c = 1) : b = c := by
   rw [← one_mul c, ← hba, mul_assoc, hac, mul_one b]
 
-end
+end MonoidTheorems
 
 /-- `AddCommMonoid` is the typeclass for additive commutative monoids. -/
 class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
@@ -431,6 +540,16 @@ instance SubNegMonoid.SMulInt {M} [SubNegMonoid M] : SMul ℤ M :=
   ⟨SubNegMonoid.zsmul⟩
 
 attribute [to_additive existing SubNegMonoid.SMulInt] DivInvMonoid.Pow
+
+
+section DivInvMonoidTheorems
+
+variable [DivInvMonoid M] {a b : M}
+
+/-@[to_additive (attr := simp) zsmul_eq_smul]
+theorem zpow_eq_pow (n : ℤ) (x : M) : DivInvMonoid-/
+
+end DivInvMonoidTheorems
 
 /-- `MonoidWithZero` is the typeclass for monoids with zero -/
 class MonoidWithZero (M : Type u) extends Monoid M, MulZeroClass M, SemigroupWithZero M
@@ -597,6 +716,12 @@ universe u v
 
 variable {F G : Type _}
 
+variable {R : Type _}
+
+class Module (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] extends DistribMulAction R M where
+  protected add_smul : ∀ (r s : R) (x : M), (r + s) • x = r • x + s • x
+  protected zero_smul : ∀ x : M, (0 : R) • x = 0  
+
 class VectorSpace (F : Type u) (G : Type v) [Field F] [AddCommGroup G] extends DistribMulAction F G where
   protected add_smul : ∀ (r s : F) (x : G), (r + s) • x = r • x + s • x
   protected zero_smul : ∀ x : G, (0 : F) • x = 0
@@ -620,7 +745,7 @@ universe w
 
 variable {F : Type _} {G₁ : Type _} {G₂ : Type _}
 
-class IsLinearMap (F : Type u) (G₁ G₂ : Type _) [Field F]
+structure IsLinearMap (F : Type u) (G₁ G₂ : Type _) [Field F]
   [AddCommGroup G₁] [AddCommGroup G₂] [VectorSpace F G₁] [VectorSpace F G₂]
   (f : G₁ → G₂) : Prop where
   map_add : ∀ x y, f (x + y) = f x + f y
