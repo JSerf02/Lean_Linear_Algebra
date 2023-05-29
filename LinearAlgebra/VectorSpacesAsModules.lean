@@ -722,33 +722,4 @@ class Module (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] extends Di
   protected add_smul : ∀ (r s : R) (x : M), (r + s) • x = r • x + s • x
   protected zero_smul : ∀ x : M, (0 : R) • x = 0  
 
-class VectorSpace (F : Type u) (G : Type v) [Field F] [AddCommGroup G] extends DistribMulAction F G where
-  protected add_smul : ∀ (r s : F) (x : G), (r + s) • x = r • x + s • x
-  protected zero_smul : ∀ x : G, (0 : F) • x = 0
-
-
-section 
-
-variable [Field 𝔽] [AddCommGroup G] [VectorSpace 𝔽 G] (α β : 𝔽) (x y : G)
-
-theorem add_smul : (α + β) • x = α • x + β • x :=
-  VectorSpace.add_smul α β x
-
-end
-
-end VectorSpace
-
-
-section IsLinear
-
-universe w
-
-variable {F : Type _} {G₁ : Type _} {G₂ : Type _}
-
-structure IsLinearMap (F : Type u) (G₁ G₂ : Type _) [Field F]
-  [AddCommGroup G₁] [AddCommGroup G₂] [VectorSpace F G₁] [VectorSpace F G₂]
-  (f : G₁ → G₂) : Prop where
-  map_add : ∀ x y, f (x + y) = f x + f y
-  map_smul : ∀ (α : F) (x), f (α • x) = α • f x
-
-end IsLinear
+class VectorSpace (α : Type _) (β : Type _) [Field α] [AddCommGroup β] extends Module α β
