@@ -96,7 +96,7 @@ namespace Vec
         simp
         let prev_eq := map_id v.2
         simp[prev_eq]
-      
+    
     /- Tells Lean to simplify nested calls of map whenever possible -/
     @[simp]
     theorem map_comp_is_map (f : α → β) (g : β → γ) (v : Vec α n) : 
@@ -121,7 +121,7 @@ namespace Vec
        
        The simplest form is defined as follows:
        - Nested apply calls must be on the left input of the parent apply
-       - Map calls must always happen before apply calls
+       - Map calls must always happen before apply calls (Ex: apply (map v) u)
        - Map calls nested under apply calls must be on the left input of the apply 
        - Nested map calls should simplify to a single map call (theorem proven above)
        - Each nested apply call should have a different Vec as its rightmost input
@@ -231,9 +231,6 @@ namespace Vec
         | k + 1 =>
           simp[zip_with]
           exact zip_with_replicate_eq_map f a v.2
-
-
-
 
   end VecFunctional
 
@@ -449,6 +446,6 @@ namespace Vec
           simp[apply_swap w u]
           simp[apply_swap w v]
       
-      #print zip_with_assoc_r
+      #print zip_with_assoc_r -- This 5 line tactic proof is CRAZY long internally!
   end EntrywiseOperations
 end Vec
