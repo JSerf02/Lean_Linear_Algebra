@@ -29,7 +29,7 @@ import Mathlib.Data.Rat.Init
 * 10.) Vector spaces are modulees where the commutative additive monoid is a
       commutative additive group and the semiring is a field.
 
-Math:
+# Math
 
 * Algebra:
   An algebra is a system A = [P, F] in which
