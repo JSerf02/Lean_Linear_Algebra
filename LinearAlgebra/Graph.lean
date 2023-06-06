@@ -36,6 +36,7 @@ class PairGraph (G : Graph V (V × V)) where
 class LooplessPairGraph (G : Graph V (V × V)) extends PairGraph G where
   no_loops : ∀ e, ¬G.loop e
 
+/- I'm suspicious of this definition, perhaps it is more akin to BidirectedPairGraph -/
 class UndirectedPairGraph (G : Graph V (V × V)) extends PairGraph G where
   bi_dir : ∀ (e₀ : V × V), ∃ e₁, G.edge_between e₁ e₀.2 e₀.1
 
