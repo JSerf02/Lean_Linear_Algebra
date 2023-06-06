@@ -27,18 +27,21 @@ def free (G : Graph V E) (e : E) : Prop :=
 def half_edge (G : Graph V E) (e : E) : Prop :=
   ∃ i u, G.inc i e = {u} ∧ G.inc (!i) e = ∅
 
-class UndirectedGraph (G : Graph V E) : Prop :=
-  edge_symm : ∀ e, G.undir e
-
 class LooplessGraph (G : Graph V E) : Prop :=
   no_loops : ∀ e, ¬G.loop e
   no_free : ∀ e, ¬G.free e
   no_half : ∀ e, ¬G.half_edge e 
 
-class SimpleGraph (G : Graph V E) extends LooplessGraph G, UndirectedGraph G
-
 def edge_between (G : Graph V E) (e : E) (v₁ v₂ : V) : Prop :=
   ∀ i, G.inc i e = {v₁,v₂}
 
-class PairGraph (G : Graph V (V × V)) :=
+class PairGraph (G : Graph V (V × V)) where
   h_pair' : ∀ e, G.free e ∨ G.edge_between e e.1 e.2
+
+class LooplessPairGraph (G : Graph V (V × V)) extends PairGraph G where
+  no_loops : ∀ e, ¬G.loop e
+
+class UndirectedGraph (G : Graph V E) where
+  inc : Bool → E → Finset V
+  ord : ∀ i e, (inc i e).card = 1
+
